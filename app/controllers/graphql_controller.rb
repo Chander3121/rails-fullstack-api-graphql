@@ -44,9 +44,16 @@ class GraphqlController < ActionController::API
   # 🔓 PUBLIC OPS
   # =========================
   def public_graphql_operation?
-    query = params[:query].to_s.lstrip
-    query.start_with?("mutation") &&
-      (query.include?("login") || query.include?("signup"))
+    # Allow introspection
+    return true if introspection_query?
+
+    # Allow auth mutations by operationName
+    %w[Login Signup].include?(params[:operationName])
+  end
+
+  def introspection_query?
+    query_string = params[:query].to_s
+    query_string.include?("__schema") || query_string.include?("__type")
   end
 
   # =========================

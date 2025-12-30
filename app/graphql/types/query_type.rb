@@ -7,12 +7,19 @@ module Types
     end
 
     field :me, Types::UserType, null: true, description: "Returns the currently authenticated user"
+    field :get_user, Types::UserType, null: true, description: "Fetches the user by ID." do
+      argument :id, ID, required: true
+    end
 
     def me
       user = context[:current_user]
       raise GraphQL::ExecutionError, "Unauthorized" unless user
 
       user
+    end
+
+    def get_user(id:)
+      User.find_by(id: id)
     end
 
     def node(id:)

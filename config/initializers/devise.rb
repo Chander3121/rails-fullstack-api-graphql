@@ -316,6 +316,7 @@ Devise.setup do |config|
 
     jwt.dispatch_requests = [
       ['POST', %r{^/api/v1/login$}],
+      ['POST', %r{^/api/v1/signup$}],
       ['POST', %r{^/graphql$}]
     ]
 
