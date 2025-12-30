@@ -8,6 +8,7 @@ module Mutations
     argument :password_confirmation, String, required: true
     argument :firstname, String, required: true
     argument :lastname, String, required: true
+    argument :resume, Types::Upload, required: false
     argument :bio, String, required: false
     argument :github_username, String, required: false
     argument :linkedin_url, String, required: false
@@ -33,6 +34,8 @@ module Mutations
         github_username: args[:github_username],
         linkedin_url: args[:linkedin_url]
       )
+
+      user.resume.attach(args[:resume]) if args[:resume]
 
       if user.save
         token, _payload = Warden::JWTAuth::UserEncoder

@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   attr_readonly :username
-  ROLES = %w[admin manager employee].freeze
+  ROLES = %w[admin manager employee hr].freeze
   devise :database_authenticatable,
          :registerable,
          :recoverable,
