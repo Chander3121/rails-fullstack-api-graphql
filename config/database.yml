@@ -21,20 +21,32 @@ test:
   port: 5432
 
 production:
-  primary: &primary_production
+  primary:
     <<: *default
-    database: strange_production
-    username: strange
-    password: <%= ENV["STRANGE_DATABASE_PASSWORD"] %>
+    adapter: postgresql
+    host: <%= ENV.fetch("POSTGRES_HOST", "db") %>
+    port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
+    database: <%= ENV.fetch("POSTGRES_DB", "strange_production") %>
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
+    pool: 5
+
   cache:
-    <<: *primary_production
+    <<: *default
+    adapter: postgresql
+    host: <%= ENV.fetch("POSTGRES_HOST", "db") %>
+    port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
     database: strange_production_cache
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
     migrations_paths: db/cache_migrate
+
   queue:
-    <<: *primary_production
+    <<: *default
+    adapter: postgresql
+    host: <%= ENV.fetch("POSTGRES_HOST", "db") %>
+    port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
     database: strange_production_queue
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
     migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: strange_production_cable
-    migrations_paths: db/cable_migrate
