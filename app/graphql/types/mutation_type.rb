@@ -7,8 +7,12 @@ module Types
       description: "An example field added by the generator"
 
     field :login, mutation: Mutations::Login
-    field :signup, mutation: Mutations::Signup
+    field :create_employee, mutation: Mutations::CreateEmployee
     field :logout, mutation: Mutations::Logout
+    field :update_employee, mutation: Mutations::UpdateEmployee
+    field :apply_leave, mutation: Mutations::ApplyLeave
+    field :create_employee_salary, mutation: Mutations::CreateSalary
+
     def test_field
       "Hello World"
     end

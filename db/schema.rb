@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_30_214913) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_31_105919) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,12 +42,59 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_30_214913) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "employee_profiles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "department"
+    t.string "designation"
+    t.string "employee_id"
+    t.integer "employment_type"
+    t.date "exit_date"
+    t.date "joining_date"
+    t.integer "status"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_employee_profiles_on_user_id"
+  end
+
+  create_table "employment_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "employee_profile_id", null: false
+    t.date "event_date"
+    t.integer "event_type"
+    t.text "notes"
+    t.datetime "updated_at", null: false
+    t.index ["employee_profile_id"], name: "index_employment_events_on_employee_profile_id"
+  end
+
   create_table "jwt_denylists", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "exp"
     t.string "jti"
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
+  end
+
+  create_table "leaves", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "employee_profile_id", null: false
+    t.date "end_date"
+    t.integer "leave_type"
+    t.text "reason"
+    t.date "start_date"
+    t.integer "status"
+    t.datetime "updated_at", null: false
+    t.index ["employee_profile_id"], name: "index_leaves_on_employee_profile_id"
+  end
+
+  create_table "salaries", force: :cascade do |t|
+    t.decimal "base_salary"
+    t.decimal "bonus"
+    t.datetime "created_at", null: false
+    t.decimal "deductions"
+    t.date "effective_from"
+    t.bigint "employee_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_profile_id"], name: "index_salaries_on_employee_profile_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,4 +121,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_30_214913) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "employee_profiles", "users"
+  add_foreign_key "employment_events", "employee_profiles"
+  add_foreign_key "leaves", "employee_profiles"
+  add_foreign_key "salaries", "employee_profiles"
 end

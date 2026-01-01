@@ -1,5 +1,5 @@
 module Types
-  class UserType < Types::BaseObject
+  class EmployeeType < Types::BaseObject
     field :id, ID, null: false
     field :email, String, null: false
     field :username, String, null: false

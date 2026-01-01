@@ -22,9 +22,6 @@ class GraphqlController < ActionController::API
 
   private
 
-  # =========================
-  # 🔐 GRAPHQL AUTH
-  # =========================
   def authenticate_graphql!
     return if public_graphql_operation?
     header = request.headers['Authorization']
@@ -40,15 +37,9 @@ class GraphqlController < ActionController::API
     render_unauthorized("Unauthorized")
   end
 
-  # =========================
-  # 🔓 PUBLIC OPS
-  # =========================
   def public_graphql_operation?
-    # Allow introspection
     return true if introspection_query?
-
-    # Allow auth mutations by operationName
-    %w[Login Signup].include?(params[:operationName])
+    params[:operationName] == "Login"
   end
 
   def introspection_query?
@@ -56,9 +47,6 @@ class GraphqlController < ActionController::API
     query_string.include?("__schema") || query_string.include?("__type")
   end
 
-  # =========================
-  # ❌ UNAUTHORIZED RESPONSE
-  # =========================
   def render_unauthorized(message = "Unauthorized")
     render json: {
       errors: [{ message: message }],
@@ -66,9 +54,6 @@ class GraphqlController < ActionController::API
     }, status: :unauthorized
   end
 
-  # =========================
-  # 🧩 HELPERS
-  # =========================
   def prepare_variables(variables_param)
     case variables_param
     when String

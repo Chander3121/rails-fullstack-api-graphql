@@ -1,29 +1,30 @@
 module Mutations
-  class Signup < Mutations::BaseMutation
-    # =========================
-    # 🔹 ARGUMENTS
-    # =========================
+  class UpdateEmployee < Mutations::BaseMutation
+    include RoleAuthorization
+
     argument :email, String, required: true
     argument :password, String, required: true
     argument :password_confirmation, String, required: true
     argument :firstname, String, required: true
     argument :lastname, String, required: true
+    argument :role, String, required: false, default_value: 'employee'
     argument :resume, Types::Upload, required: false
     argument :bio, String, required: false
     argument :github_username, String, required: false
     argument :linkedin_url, String, required: false
 
-    # =========================
-    # 🔹 FIELDS
-    # =========================
     field :user, Types::UserType, null: true
-    field :token, String, null: true
     field :errors, [String], null: false
 
-    # =========================
-    # 🔹 RESOLVER
-    # =========================
     def resolve(**args)
+      current_user = context[:current_user]
+      require_admin_or_hr!(current_user)
+      if args[:role] == 'admin'
+        return {
+          user: nil,
+          errors: ["Cannot create user with admin role"]
+        }
+      end
       user = User.new(
         email: args[:email],
         password: args[:password],
@@ -31,26 +32,19 @@ module Mutations
         firstname: args[:firstname],
         lastname: args[:lastname],
         bio: args[:bio],
+        role: args[:role],
         github_username: args[:github_username],
         linkedin_url: args[:linkedin_url]
       )
 
-      user.resume.attach(args[:resume]) if args[:resume]
-
       if user.save
-        token, _payload = Warden::JWTAuth::UserEncoder
-          .new
-          .call(user, :user, nil)
-
         {
           user: user,
-          token: token,
           errors: []
         }
       else
         {
           user: nil,
-          token: nil,
           errors: user.errors.full_messages
         }
       end

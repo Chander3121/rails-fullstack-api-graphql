@@ -41,6 +41,9 @@ class User < ApplicationRecord
   before_validation :generate_username, on: :create
 
   has_one_attached :resume
+  has_one :employee_profile, dependent: :destroy
+
+  after_create :create_employee_profile
 
   private
 
@@ -57,6 +60,14 @@ class User < ApplicationRecord
     self.username = candidate
   end
 
+  def create_employee_profile
+    EmployeeProfile.create!(
+      user: self,
+      employee_id: "EMP#{id.to_s.rjust(4, '0')}",
+      joining_date: Date.current,
+      status: "active"
+    )
+  end
 
   def password_required?
     !persisted? || !password.nil? || !password_confirmation.nil?
