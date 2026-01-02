@@ -12,15 +12,15 @@ class Api::V1::BaseController < ActionController::API
 
   def authenticate_api_user!
     # 🚨 HARD REQUIRE AUTH HEADER
-    header = request.headers['Authorization']
+    header = request.headers["Authorization"]
     return unauthorized!("Missing token") unless header&.start_with?("Bearer ")
 
     # 🚨 JWT ONLY — NO FALLBACK
-    token = header.split(' ').last
+    token = header.split(" ").last
     payload = Warden::JWTAuth::TokenDecoder.new.call(token)
-    return unauthorized!("You tried with expired token, sign in again to get a new token.") unless JwtDenylist.where(jti: payload['jti']).empty?
+    return unauthorized!("You tried with expired token, sign in again to get a new token.") unless JwtDenylist.where(jti: payload["jti"]).empty?
 
-    @current_user = User.find(payload['sub'])
+    @current_user = User.find(payload["sub"])
 
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound
         unauthorized!("Unauthorized")

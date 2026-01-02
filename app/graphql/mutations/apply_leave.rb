@@ -6,7 +6,7 @@ module Mutations
     argument :reason, String, required: false
 
     field :leave, Types::LeaveType, null: true
-    field :errors, [String], null: false
+    field :errors, [ String ], null: false
 
     def resolve(start_date:, end_date:, leave_type:, reason: nil)
       user = context[:current_user]
@@ -18,7 +18,7 @@ module Mutations
       if end_date <= start_date
         return {
           leave: nil,
-          errors: ["End date must be greater than start date"]
+          errors: [ "End date must be greater than start date" ]
         }
       end
 

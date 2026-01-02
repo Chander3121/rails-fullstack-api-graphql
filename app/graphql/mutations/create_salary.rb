@@ -9,7 +9,7 @@ module Mutations
     argument :effective_from, GraphQL::Types::ISO8601Date, required: true
 
     field :salary, Types::SalaryType, null: true
-    field :errors, [String], null: false
+    field :errors, [ String ], null: false
 
     def resolve(**args)
       current_user = context[:current_user]

@@ -11,8 +11,8 @@ module Types
       context.schema.object_from_id(id, context)
     end
 
-    field :nodes, [Types::NodeType, null: true], null: true, description: "Fetches a list of objects given a list of IDs." do
-      argument :ids, [ID], required: true, description: "IDs of the objects."
+    field :nodes, [ Types::NodeType, null: true ], null: true, description: "Fetches a list of objects given a list of IDs." do
+      argument :ids, [ ID ], required: true, description: "IDs of the objects."
     end
     def nodes(ids:)
       ids.map { |id| context.schema.object_from_id(id, context) }
@@ -36,18 +36,18 @@ module Types
       User.find_by(id: id)
     end
 
-    field :get_employees, [Types::EmployeeType], null: false, description: "Fetches all employees"
+    field :get_employees, [ Types::EmployeeType ], null: false, description: "Fetches all employees"
     def get_employees
       current_user = context[:current_user]
       require_admin_or_hr!(current_user)
-      if current_user.role == 'admin'
-        User.where.not(role: 'admin')
+      if current_user.role == "admin"
+        User.where.not(role: "admin")
       else
-        User.where(role: 'employee')
+        User.where(role: "employee")
       end
     end
 
-    field :my_leaves, [Types::LeaveType], null: false, description: "Fetches all leaves for the current user"
+    field :my_leaves, [ Types::LeaveType ], null: false, description: "Fetches all leaves for the current user"
     def my_leaves
       user = context[:current_user]
       raise GraphQL::ExecutionError, "Unauthorized" unless user
@@ -55,7 +55,7 @@ module Types
       user.employee_profile.leaves
     end
 
-    field :user_leaves, [Types::LeaveType], null: false, description: "Fetches all leaves for the current user" do
+    field :user_leaves, [ Types::LeaveType ], null: false, description: "Fetches all leaves for the current user" do
       argument :user_id, ID, required: true
     end
     def user_leaves(user_id:)

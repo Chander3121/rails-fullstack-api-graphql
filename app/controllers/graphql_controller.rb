@@ -17,22 +17,22 @@ class GraphqlController < ActionController::API
     render json: result
   rescue StandardError => e
     raise e unless Rails.env.development?
-    render json: { errors: [{ message: e.message }], data: {} }, status: 500
+    render json: { errors: [ { message: e.message } ], data: {} }, status: 500
   end
 
   private
 
   def authenticate_graphql!
     return if public_graphql_operation?
-    header = request.headers['Authorization']
+    header = request.headers["Authorization"]
 
-    unless header&.start_with?('Bearer ')
+    unless header&.start_with?("Bearer ")
       render_unauthorized("Missing token") and return
     end
-    token = header.split(' ').last
+    token = header.split(" ").last
     payload = Warden::JWTAuth::TokenDecoder.new.call(token)
-    return render_unauthorized("You tried with expired token, sign in again to get a new token.") if JwtDenylist.where(jti: payload['jti']).exists?
-    @current_user = User.find(payload['sub'])
+    return render_unauthorized("You tried with expired token, sign in again to get a new token.") if JwtDenylist.where(jti: payload["jti"]).exists?
+    @current_user = User.find(payload["sub"])
   rescue JWT::DecodeError, ActiveRecord::RecordNotFound
     render_unauthorized("Unauthorized")
   end
@@ -49,7 +49,7 @@ class GraphqlController < ActionController::API
 
   def render_unauthorized(message = "Unauthorized")
     render json: {
-      errors: [{ message: message }],
+      errors: [ { message: message } ],
       data: {}
     }, status: :unauthorized
   end

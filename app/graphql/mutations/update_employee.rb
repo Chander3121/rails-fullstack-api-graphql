@@ -7,22 +7,22 @@ module Mutations
     argument :password_confirmation, String, required: true
     argument :firstname, String, required: true
     argument :lastname, String, required: true
-    argument :role, String, required: false, default_value: 'employee'
+    argument :role, String, required: false, default_value: "employee"
     argument :resume, Types::Upload, required: false
     argument :bio, String, required: false
     argument :github_username, String, required: false
     argument :linkedin_url, String, required: false
 
     field :user, Types::UserType, null: true
-    field :errors, [String], null: false
+    field :errors, [ String ], null: false
 
     def resolve(**args)
       current_user = context[:current_user]
       require_admin_or_hr!(current_user)
-      if args[:role] == 'admin'
+      if args[:role] == "admin"
         return {
           user: nil,
-          errors: ["Cannot create user with admin role"]
+          errors: [ "Cannot create user with admin role" ]
         }
       end
       user = User.new(
